@@ -1,26 +1,24 @@
 /*
-    백준 1854
+    백준 1854 - K번째 최단 경로 찾기
     1. 아이디어
-        다익스트라 PriorityQueue 를 사용해 가중치 배열 출력하면 됨
-        while(!q.isEmpty) {
-            if(ans[now]  < weight) continue;
-            for(Edge next: node.get(now)) {
-                if(ans[next.next] > ans[now] + weight) {
-                    ans[next.next] = ans[now] + weight // 가중치 업데이트
-                    q.add(new Edge(next.next,ans[next.next]));
-                }
-            }
-            ans[k] 출력
-        }
+        - 일반 다익스트라는 최단 거리 '하나'만 저장하지만, 이 문제는 'K개'를 저장해야 함.
+        - 각 노드마다 우선순위 큐(최대 힙, PriorityQueue<Integer>)를 사용하여 K개의 경로를 유지함.
+        - 다익스트라 탐색 중 새로운 경로(nextDist)를 발견했을 때:
+            A. 해당 노드의 바구니가 K개 미만이면: 무조건 추가 후 탐색용 PQ에 넣음.
+            B. 바구니가 K개 꽉 찼는데, 현재 경로가 K등(peek)보다 작으면: 
+               기존 K등을 poll()하고 새 경로를 add()한 뒤 탐색용 PQ에 넣음.
+        - 1번 노드에서 시작하는 다익스트라 한 번으로 모든 노드의 K번째 경로를 확정함.
+
     2. 시간복잡도
-        O(ElogV) 250,000 log 1,000
+        - 다익스트라 기본: O(E log V)
+        - 각 간선마다 K개들이 바구니를 관리(log K)하므로: O(E log V * log K)
+        - 약 250,000 * 10 * 7 = 약 1,750,000 연산 (2초 제한 내 충분히 가능)
 
     3. 자료구조
-        노드정보: ArrayList<ArrayList<Edege>>
-        가중치배열: int[] // 초기값 = Integer.MAX_VALUE
-        탐색도구: PriorityQueue<Edge>
-        노드클래스: 노드클래스 : Edge {int d 목적지, int w 가중치}
-
+        - 노드 정보: ArrayList<ArrayList<Edge>> (인접 리스트)
+        - K등 기록 바구니: PriorityQueue<Integer>[] dists (최대 힙: Collections.reverseOrder())
+        - 탐색 도구: PriorityQueue<Edge> pq (최소 힙: 가중치 작은 순서부터 탐색)
+        - 데이터 클래스: Edge {int d 목적지 노드, int w 현재까지의 누적 가중치}
 */
 import java.io.*;
 import java.util.*;
